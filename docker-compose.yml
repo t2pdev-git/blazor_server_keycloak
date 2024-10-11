@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  blazorauthsample:
+    image: ${DOCKER_REGISTRY-}blazorauthsample
+    container_name: BlazorAuthSample
+    build:
+      context: .
+      dockerfile: BlazorAuthSample/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+
+  blazorauthsample.identity:
+    image: quay.io/keycloak/keycloak:24.0.5
+    container_name: BlazorAuthSample.Identity
+    command: start-dev --import-realm
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - ./.containers/identity:/opt/keycloak/data
+      - ./.files:/opt/keycloak/data/import
+    ports:
+      - 28080:8080

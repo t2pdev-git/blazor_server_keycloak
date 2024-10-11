@@ -1,4 +1,7 @@
 # Blazor Server Application with Keycloak Authentication
+
+Forked from https://github.com/csinisa/blazor_server_keycloak
+
 Demonstration of using [Keycloak](https://www.keycloak.org/) for authentication of a Blazor Server App
 
 ## Install & Configure Keycloak
@@ -15,13 +18,13 @@ Install Keycloak using the [instructions from the Keycloak web site](https://www
 
 Create a new client named `my-blazor-server-app` in the realm named "myrealm".
 
-1. Open the [Keycloak Admin Console](http://localhost:8080/auth/admin)
+1. Open the [Keycloak Admin Console](http://localhost:28080/auth/admin)
 2. If not already selected, select "myrealm"
 3. Click 'Clients'
 4. Fill in the form with the following values:
     - Client ID: `my-blazor-server-app`
     - Client Protocol: `openid-connect`
-    - Root URL: `https://localhost:44322/`
+    - Root URL: `https://localhost:5001/`
 5. Click `Save`
 
 ![](doc/images/screenshot_01_client_add.png?raw=true)
