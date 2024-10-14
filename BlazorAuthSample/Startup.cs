@@ -2,16 +2,11 @@ using BlazorAuthSample.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -47,31 +42,32 @@ namespace BlazorAuthSample
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie()
-            .AddOpenIdConnect(options => 
-            {
-                options.Authority = Configuration.GetValue<string>("Oidc:Authority");
-                options.ClientId = Configuration.GetValue<string>("Oidc:ClientId");
-                options.ClientSecret = Configuration.GetValue<string>("Oidc:ClientSecret");
-                options.RequireHttpsMetadata = Configuration.GetValue<bool>("Oidc:RequireHttpsMetadata"); // disable only in dev env
-                options.ResponseType = OpenIdConnectResponseType.Code;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.SaveTokens = false;
-                options.MapInboundClaims = true;
-                options.Scope.Clear();
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                options.Scope.Add("email");
-                options.Scope.Add("roles");
-
-                options.Events = new OpenIdConnectEvents
+            .AddOpenIdConnect(o => 
                 {
-                    OnUserInformationReceived = context =>
+                    o.Authority = Configuration.GetValue<string>("Authentication:Authority");
+                    o.ClientId = Configuration.GetValue<string>("Authentication:ClientId");
+                    o.ClientSecret = Configuration.GetValue<string>("Authentication:ClientSecret");
+                    o.RequireHttpsMetadata = Configuration.GetValue<bool>("Authentication:RequireHttpsMetadata"); // disable only in dev env
+                    o.ResponseType = OpenIdConnectResponseType.Code;
+                    o.GetClaimsFromUserInfoEndpoint = true;
+                    o.SaveTokens = false;
+                    o.MapInboundClaims = true;
+                    o.Scope.Clear();
+                    o.Scope.Add("openid");
+                    o.Scope.Add("profile");
+                    o.Scope.Add("email");
+                    o.Scope.Add("roles");
+                    o.TokenValidationParameters.ValidIssuer = Configuration.GetValue<string>("Authentication:ValidIssuer");
+                    o.MetadataAddress = Configuration.GetValue<string>("Authentication:MetadataAddress");
+                    o.Events = new OpenIdConnectEvents
                     {
-                        MapKeyCloakRolesToRoleClaims(context);
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                        OnUserInformationReceived = context =>
+                        {
+                            MapKeyCloakRolesToRoleClaims(context);
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
             services.AddAuthorization();
         }
